@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convite Chá Revelação + Fraldas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f3f2;
+      color: #5f6858;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 768px;
+      margin: 0 auto;
+      background: #f7f3f2;
+      position: relative;
+    }
+
+    .section-image {
+    scroll-snap-align: start;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    }
+
+    .section-image img {
+    width: 100%;
+    height: 95%;
+    object-fit: cover;
+    }
+
+    .floating-actions {
+        position: fixed;
+        right: 16px;
+        bottom: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; 
+        gap: 10px;
+    }
+    .gift-button {
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(180deg, #dcb1b6 0%, #cfa0a7 100%);
+      color: white;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+    }
+
+    .gift-button:hover {
+      opacity: 0.95;
+    }
+
+    .scroll-button {
+      border: none;
+      cursor: pointer;
+      background: #8d9a82;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.16);
+    }
+
+   .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(35, 28, 26, 0.55);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 2000;
+    }
+
+    .modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    background: linear-gradient(180deg, #fffefe 0%, #fbf7f6 100%);
+    border-radius: 28px;
+    padding: 26px 20px 22px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(215, 190, 194, 0.5);
+    }
+
+    .fechar {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #988f8b;
+    line-height: 1;
+    }
+
+    .modal-content h2 {
+    color: #8d9a82;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    }
+
+    .modal-value {
+    display: inline-block;
+    margin: 4px 0 16px;
+    background: #f3e3e7;
+    color: #b07c85;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    }
+
+    .modal-text {
+    color: #6f6a67;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    font-size: 0.98rem;
+    }
+
+    .qr-wrapper {
+    background: #fff;
+    border: 1px solid #eee3e5;
+    border-radius: 22px;
+    padding: 14px;
+    margin: 0 auto 18px;
+    width: fit-content;
+    box-shadow: inset 0 0 0 1px rgba(240, 230, 232, 0.7);
+    }
+
+    .modal-content img {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    border-radius: 12px;
+    }
+
+    .pix-label {
+    font-size: 0.95rem;
+    color: #6f6a67;
+    margin-bottom: 10px;
+    }
+
+    #pixCode {
+    width: 100%;
+    min-height: 92px;
+    padding: 14px;
+    border: 1px solid #e6d8db;
+    border-radius: 16px;
+    resize: none;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #665f5c;
+    background: #fff;
+    word-break: break-all;
+    outline: none;
+    }
+
+    #pixCode:focus {
+    border-color: #d2b1b8;
+    box-shadow: 0 0 0 4px rgba(210, 177, 184, 0.12);
+    }
+
+    .copy-button {
+    width: 100%;
+    margin-top: 12px;
+    background: linear-gradient(180deg, #8f9d84 0%, #7d8a73 100%);
+    color: white;
+    border: none;
+    padding: 13px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.98rem;
+    box-shadow: 0 10px 20px rgba(125, 138, 115, 0.24);
+    }
+
+    .copy-button:hover {
+    opacity: 0.97;
+    }
+
+    #copiadoMsg {
+    display: none;
+    margin-top: 10px;
+    color: #6f8a62;
+    font-weight: 700;
+    font-size: 0.95rem;
+    }
+
+    .contact-button {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 50%;
+    background: #25D366; /* cor oficial */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .contact-button img {
+    width: 28px;
+    height: 28px;
+    }
+
+    .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+    }
+
+    .contact-links a {
+    display: block;
+    text-decoration: none;
+    background: #f4e3e6;
+    color: #6b6b6b;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-weight: 700;
+    }
+    .maps-button {
+        display: inline-block;
+        margin-top: 12px;
+        background: #8d9a82;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+    }
+  #presente {
+    position: relative;
+  }
+
+  .location-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    top: -25px;
+    position: relative;
+  }
+  .route-button:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Waze */
+  .route-button.waze {
+    background: #33ccff;
+  }
+
+  /* Maps */
+  .route-button.maps {
+    background: #ea4335;
+  }
+  .route-icon {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+    display: block;
+  }
+
+  .route-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    box-shadow: 0 8px 10px rgba(0,0,0,0.18);
+    transition: all 0.2s ease;
+    animation: pulse 2s infinite;
+    text-decoration: none;
+  }
+
+  /* Hover (levanta) */
+  .route-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+  }
+
+  /* Clique (pressionado) */
+  .route-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.15); }
+    70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  }
+  #presente img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+  }
+    @media (max-width: 768px) {
+      .page {
+        max-width: 100%;
+      }
+
+      .section-image {
+        min-height: auto;
+      }
+
+      .floating-actions {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+      }
+
+      .gift-button,
+      .scroll-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+    <main class="page">
+        <section class="section-image" id="inicio">
+        <img src="img-1.png" alt="Convite especial chá revelação e fraldas">
+        </section>
+
+        <section class="section-image">
+        <img src="img-2.png" alt="Mensagem do convite">
+        </section>
+
+        <section class="section-image" id="presente">
+            <img src="img-3.png" alt="Data, horário, presente e local">
+            <div class="location-actions">
+              <a
+                href="https://waze.com/ul?q=Salão+de+Festa+do+Maluí+Residance+Rod+Eng+Edilson+Tavora+7300+Barra+dos+Coqueiros+SE"
+                target="_blank"
+                class="route-button waze"
+              >
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/3771/3771526.png"
+                  alt="Waze"
+                  class="route-icon"
+                >
+              </a>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Salão+de+Festa+do+Maluí+Residance+Rod+Eng+Edilson+Tavora+7300+Barra+dos+Coqueiros+SE"
+                target="_blank"
+                class="route-button maps"
+              >
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/2991/2991231.png"
+                  alt="Google Maps"
+                  class="route-icon"
+                >                
+              </a>
+          </div>
+        </section>
+
+        <section class="section-image">
+        <img src="img-4.png" alt="Confirmação de presença">
+        </section>
+    </main>
+
+    <div class="floating-actions">
+        <button class="contact-button" onclick="abrirContatoModal()">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+        </button>
+        <button class="gift-button" onclick="abrirModal('qr-frald-g.png', 'Pix presente')">
+        💝 Presentear com carinho
+        </button>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="fechar" onclick="fecharModal()">×</span>
+
+            <h2>Nosso presente</h2>
+            <div id="valor" class="modal-value">Pix presente</div>
+
+            <p class="modal-text">
+            Escaneie o QR Code abaixo ou copie o código Pix para pagar no app do seu banco.
+            </p>
+
+            <div class="qr-wrapper">
+            <img id="qrcode" src="" alt="QR Code do presente">
+            </div>
+
+            <p class="pix-label">Código Pix copia e cola</p>
+
+            <textarea id="pixCode" readonly></textarea>
+
+            <button id="copyButton" class="copy-button" onclick="copiarPix()">
+            📋 Copiar código Pix
+            </button>
+
+            <span id="copiadoMsg">✅ Código Pix copiado</span>
+        </div>
+    </div>
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="fechar" onclick="fecharContatoModal()">×</span>
+            <h2>Fale com os papais</h2>
+            <p>Escolha um contato para tirar dúvidas ou confirmar presença.</p>
+
+            <div class="contact-links">
+            <a href="https://wa.me/5579998169331" target="_blank">Fale com Mamãe Brenda</a>
+            <a href="https://wa.me/5579999931888" target="_blank">Fale com Mamãe Pedro</a>
+            </div>
+        </div>
+    </div>
+  <script>
+    function abrirModal(img, valor) {
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('qrcode').src = img;
+        document.getElementById('valor').innerText = valor;
+        document.getElementById('pixCode').value =
+            '00020126490014br.gov.bcb.pix0127pedro.cruz.lucena@gmail.com5204000053039865802BR5925PEDRO AUGUSTO CRUZ DE LUC6007ARACAJU62070503***6304F0A9';
+
+        document.getElementById('copyButton').innerText = '📋 Copiar código Pix';
+        document.getElementById('copiadoMsg').style.display = 'none';
+    }
+
+    function fecharModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    function abrirContatoModal() {
+        document.getElementById('contactModal').style.display = 'flex';
+    }
+
+    function fecharContatoModal() {
+        document.getElementById('contactModal').style.display = 'none';
+    }
+
+    function copiarPix() {
+        const pix = document.getElementById('pixCode');
+        const botao = document.getElementById('copyButton');
+        const msg = document.getElementById('copiadoMsg');
+
+        navigator.clipboard.writeText(pix.value);
+
+        botao.innerText = '✅ Copiado!';
+        msg.style.display = 'block';
+
+        setTimeout(() => {
+            botao.innerText = '📋 Copiar código Pix';
+            msg.style.display = 'none';
+        }, 2000);
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('modal');
+        const contactModal = document.getElementById('contactModal');
+
+        if (event.target === modal) {
+        fecharModal();
+        }
+
+        if (event.target === contactModal) {
+        fecharContatoModal();
+        }
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+        fecharModal();
+        fecharContatoModal();
+        }
+    });
+  </script>
+</body>
+</html>
