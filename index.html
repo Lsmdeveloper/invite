@@ -354,7 +354,8 @@
         </section>
 
         <section class="section-image" id="presente">
-            <img src="img-3.png" alt="Data, horário, presente e local">
+            <img id="imgFralda" src="img-3.png" alt="Data, horário, presente e local FRALDA P">
+
             <div class="location-actions">
               <a
                 href="https://waze.com/ul?q=Salão+de+Festa+do+Maluí+Residance+Rod+Eng+Edilson+Tavora+7300+Barra+dos+Coqueiros+SE"
@@ -434,6 +435,19 @@
         </div>
     </div>
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const fralda = params.get('fralda');
+
+    const imagens = {
+      p: 'img-3.png',
+      m: 'frald-m.png',
+      g: 'frald-g.png',
+      gg: 'frald-gg.png'
+    };
+
+    if (fralda && imagens[fralda]) {
+      document.getElementById('imgFralda').src = imagens[fralda];
+    }
     function abrirModal(img, valor) {
         document.getElementById('modal').style.display = 'flex';
         document.getElementById('qrcode').src = img;
