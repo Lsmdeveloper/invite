@@ -310,6 +310,161 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   }
 
+  .poll-section {
+    position: relative;
+    overflow: hidden;
+    scroll-snap-align: start;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background: #f7f3f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .balloon {
+    position: absolute;
+    width: 270px;
+    opacity: 0.9;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+    animation: floatBalloon 5s ease-in-out infinite;
+  }
+
+  /* Esquerda (menino) */
+  .balloon-left {
+    left: -50px;
+    top: 1%;
+  }
+
+  /* Direita (menina) */
+  .balloon-right {
+    right: -40px;
+    top: 48%;
+    animation-delay: 1.5s;
+  }
+
+  /* Animação de flutuar */
+  @keyframes floatBalloon {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  .poll-card {
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border-radius: 28px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+    border: 1px solid rgba(220, 203, 206, 0.6);
+  }
+
+  .poll-card h2 {
+    font-size: 1.5rem;
+    color: #7d8a73;
+    margin-bottom: 12px;
+  }
+
+  .poll-card p {
+    color: #7b7774;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .poll-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .poll-button {
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    padding: 16px 20px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    animation: floatButton 2.8s ease-in-out infinite;
+  }
+
+  .poll-button.boy {
+    background: linear-gradient(180deg, #9aae8c 0%, #7d8a73 100%);
+  }
+
+  .poll-button.girl {
+    background: linear-gradient(180deg, #d7b4df 0%, #be8ccc 100%);
+    animation-delay: 0.35s;
+  }
+
+  .poll-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+    filter: brightness(1.03);
+  }
+
+  .poll-button:active {
+    transform: scale(0.97);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+  }
+
+  @keyframes floatButton {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .top-stripes {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 250px;
+    display: flex;
+    z-index: 0;
+  }
+  .top-stripes::before {
+    content: "";
+    flex: 1;
+
+    background: repeating-linear-gradient(
+      to right,
+      #d7dad0 0 16px,
+      #ffffff 16px 19px
+    );
+  }
+  .top-stripes::after {
+    content: "";
+    flex: 1;
+
+    background: repeating-linear-gradient(
+      to right,
+      #eed4d3 0 16px,
+      #ffffff 16px 19px
+    );
+  }
 
   @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.15); }
@@ -381,7 +536,27 @@
               </a>
           </div>
         </section>
+        <section class="poll-section">
+          <div class="top-stripes"></div>
+          <img src="balao-pink.png" class="balloon balloon-left" />
+          <img src="balao.png" class="balloon balloon-right" />
+          <div class="poll-card">
+            <h2>💚 Menino ou Menina? 💜</h2>
+            <p>Deixe seu palpite e participe desse momento especial com a gente.</p>
 
+            <div class="poll-buttons">
+              <button type="button" class="poll-button boy" onclick="enviarPalpite('👶 Menino')">
+                💚 Votar em Menino
+              </button>
+
+              <button type="button" class="poll-button girl" onclick="enviarPalpite('👶 Menina')">
+                💜 Votar em Menina
+              </button>
+            </div>
+
+            <p id="poll-success" class="poll-success" style="display:none;"></p>
+          </div>
+        </section>
         <section class="section-image">
         <img src="img-4.png" alt="Confirmação de presença">
         </section>
@@ -506,6 +681,35 @@
         fecharContatoModal();
         }
     });
+    async function enviarPalpite(valor) {
+      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSciJKolh-MchCUcBpJqcV9fV7IA-5E7yAHF2GZApI0I-ZYoOw/formResponse";
+
+      const data = new URLSearchParams();
+      data.append("entry.2008413881", valor);
+
+      try {
+        await fetch(formUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: data.toString()
+        });
+
+        const msg = document.getElementById("poll-success");
+        msg.style.display = "block";
+        msg.textContent = "✅ Palpite enviado com sucesso!";
+
+        setTimeout(() => {
+          msg.style.display = "none";
+        }, 3000);
+      } catch (e) {
+        const msg = document.getElementById("poll-success");
+        msg.style.display = "block";
+        msg.textContent = "❌ Não foi possível enviar agora.";
+      }
+    }
   </script>
 </body>
 </html>
