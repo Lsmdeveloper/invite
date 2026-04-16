@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bolão do Bebê</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #1f2328;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #146b46;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #00ffb3;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .logo span {
+      color: #ffd400;
+    }
+
+    .menu {
+      display: flex;
+      gap: 24px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .menu .active {
+      color: #00ffb3;
+      border-bottom: 2px solid #00ffb3;
+      padding-bottom: 6px;
+    }
+
+    .wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .breadcrumb {
+      color: #b8c1c8;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    .event-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #3a3f45;
+      margin-bottom: 22px;
+    }
+
+    .tab {
+      color: #d0d6dc;
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+
+    .tab.active {
+      color: #00ffb3;
+      font-weight: 700;
+      background: rgba(0, 255, 179, 0.12);
+      padding: 8px 14px;
+      border-radius: 999px;
+    }
+
+    .market {
+      background: #2c3136;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid #3a3f45;
+    }
+
+    .market-header {
+      padding: 16px 18px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-bottom: 1px solid #3a3f45;
+      background: linear-gradient(90deg, #31373d 0%, #383f45 100%);
+    }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .odd-card {
+      background: #3a3f45;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #4b5259;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .odd-card:hover {
+      transform: translateY(-2px);
+      border-color: #00ffb3;
+    }
+
+    .odd-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .odd-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .odd-value {
+      color: #ffd400;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .odd-meta {
+      color: #c7cdd3;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .action-area {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .bet-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: #101214;
+      background: #00ffb3;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .bet-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.96;
+    }
+
+    .bet-btn.alt {
+      background: #ffd400;
+    }
+
+    .info-box {
+      margin-top: 20px;
+      background: #2c3136;
+      border: 1px solid #3a3f45;
+      border-radius: 12px;
+      padding: 16px;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: #fff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      z-index: 99;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 380px;
+      background: #23282d;
+      border: 1px solid #3a3f45;
+      border-radius: 16px;
+      padding: 22px 18px 18px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #c7cdd3;
+      line-height: 1;
+    }
+
+    .modal h2 {
+      margin-bottom: 8px;
+      font-size: 1.4rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(0, 255, 179, 0.15);
+      color: #00ffb3;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .modal p {
+      color: #c7cdd3;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .qr-box {
+      background: #fff;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .qr-box img {
+      width: 100%;
+      max-width: 220px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .pix-code {
+      width: 100%;
+      min-height: 90px;
+      border-radius: 10px;
+      border: 1px solid #48515a;
+      background: #1b1f23;
+      color: #fff;
+      padding: 12px;
+      resize: none;
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #00ffb3;
+      color: #101214;
+    }
+
+    .copied {
+      display: none;
+      margin-top: 10px;
+      color: #00ffb3;
+      font-weight: 700;
+      text-align: center;
+    }
+    .odd-card.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .odd-card.clickable:hover {
+      transform: translateY(-2px);
+      border-color: #00ffb3;
+      box-shadow: 0 10px 24px rgba(0, 255, 179, 0.12);
+    }
+
+    .odd-card.clickable:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 700px) {
+      .market-grid,
+      .action-area {
+        grid-template-columns: 1fr;
+      }
+
+      .event-title {
+        font-size: 1.5rem;
+      }
+
+      .menu {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">bet<span>baby</span></div>
+    <nav class="menu">
+      <div>Todos os Palpites</div>
+      <div class="active">Ao Vivo</div>
+      <div>Especiais</div>
+    </nav>
+  </header>
+
+  <main class="wrapper">
+    <div class="breadcrumb">‹ Chá do Bebê • Bolão Especial</div>
+    <div class="event-title">Menino ou Menina</div>
+
+    <div class="tabs">
+      <div class="tab active">Todos</div>
+      <div class="tab">Criar palpite</div>
+      <div class="tab">Instantâneas</div>
+      <div class="tab">Palpite final</div>
+      <div class="tab">Especiais</div>
+    </div>
+
+    <section class="market">
+      <div class="market-header">Resultado Final</div>
+      <div class="market-grid">
+        <div class="odd-card clickable" onclick="abrirModal('boy', 1.78)">
+          <div class="odd-top">
+            <div class="odd-name">💚 Menino</div>
+            <div class="odd-value" id="oddBoy">1.78</div>
+          </div>
+        </div>
+        <div class="odd-card clickable" onclick="abrirModal('girl', 1.95)">
+          <div class="odd-top">
+            <div class="odd-name">💜 Menina</div>
+            <div class="odd-value" id="oddGirl">1.95</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="market">
+        <div class="market-header">Data de Nascimento</div>
+            <div class="market-grid">
+                <div class="odd-card clickable" onclick="abrirModal('date_1', 2.15)">
+                <div class="odd-top">
+                    <div class="odd-name">Até dia 10</div>
+                    <div class="odd-value">2.15</div>
+                </div>
+                </div>
+
+                <div class="odd-card clickable" onclick="abrirModal('date_2', 1.80)">
+                <div class="odd-top">
+                    <div class="odd-name">De 11 a 20</div>
+                    <div class="odd-value">1.80</div>
+                </div>                
+                </div>
+
+                <div class="odd-card clickable" onclick="abrirModal('date_3', 2.50)">
+                <div class="odd-top">
+                    <div class="odd-name">De 21 a 31</div>
+                    <div class="odd-value">2.50</div>
+                </div>               
+            </div>
+        </div>
+    </section>
+
+        <section class="market">
+            <div class="market-header">Peso do Bebê</div>
+            <div class="market-grid">
+                <div class="odd-card clickable" onclick="abrirModal('peso_1', 3.20)">
+                <div class="odd-top">
+                    <div class="odd-name">Até 2,9 kg</div>
+                    <div class="odd-value">3.20</div>
+                </div>               
+                </div>
+
+                <div class="odd-card clickable" onclick="abrirModal('peso_2', 1.60)">
+                <div class="odd-top">
+                    <div class="odd-name">3,0 a 3,4 kg</div>
+                    <div class="odd-value">1.60</div>
+                </div>               
+                </div>
+
+                <div class="odd-card clickable" onclick="abrirModal('peso_3', 2.40)">
+                <div class="odd-top">
+                    <div class="odd-name">3,5 kg ou mais</div>
+                    <div class="odd-value">2.40</div>
+                </div>               
+                </div>
+            </div>
+        </section>
+
+        <section class="market">
+        <div class="market-header">Tamanho do Bebê</div>
+        <div class="market-grid">
+            <div class="odd-card clickable" onclick="abrirModal('tam_1', 2.80)">
+            <div class="odd-top">
+                <div class="odd-name">Até 47 cm</div>
+                <div class="odd-value">2.80</div>
+            </div>           
+            </div>
+
+            <div class="odd-card clickable" onclick="abrirModal('tam_2', 1.70)">
+            <div class="odd-top">
+                <div class="odd-name">48 a 50 cm</div>
+                <div class="odd-value">1.70</div>
+            </div>            
+            </div>
+
+            <div class="odd-card clickable" onclick="abrirModal('tam_3', 2.30)">
+            <div class="odd-top">
+                <div class="odd-name">51 cm ou mais</div>
+                <div class="odd-value">2.30</div>
+            </div>            
+            </div>
+        </div>
+        </section>
+
+        <section class="market">
+        <div class="market-header">Período do Nascimento</div>
+        <div class="market-grid">
+            <div class="odd-card clickable" onclick="abrirModal('dia', 1.75)">
+            <div class="odd-top">
+                <div class="odd-name">🌞 Durante o dia</div>
+                <div class="odd-value">1.75</div>
+            </div>           
+            </div>
+
+            <div class="odd-card clickable" onclick="abrirModal('noite', 2.20)">
+            <div class="odd-top">
+                <div class="odd-name">🌙 Durante a noite</div>
+                <div class="odd-value">2.20</div>
+            </div>           
+            </div>
+        </div>
+    </section>
+
+    <section class="market">
+      <div class="market-header">Chance Dupla</div>
+      <div class="market-grid">
+        <div class="odd-card">
+          <div class="odd-top">
+            <div class="odd-name">Total acumulado</div>
+            <div class="odd-value" id="poolValue">R$ 120</div>
+          </div>
+          <div class="odd-meta">Valor total somado até agora.</div>
+        </div>
+
+        <div class="odd-card">
+          <div class="odd-top">
+            <div class="odd-name">Entrada</div>
+            <div class="odd-value" id="entryValue">R$ 10</div>
+          </div>
+          <div class="odd-meta">Contribuição por participante.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="info-box">
+      <strong>Como funciona:</strong> você escolhe um lado, envia sua contribuição e acompanha o retorno estimado conforme a quantidade de participantes em cada lado.
+    </div>
+  </main>
+
+  <div class="modal" id="betModal">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModal()">×</span>
+      <h2>Confirmar participação</h2>
+      <div class="badge" id="betBadge">💚 Menino</div>
+      <p>Digite o valor da aposta:</p>
+      <input 
+        type="number" 
+        id="betAmount" 
+        placeholder="Ex: 50" 
+        style="width:100%; padding:10px; border-radius:8px; margin-bottom:10px;"
+        oninput="calcularRetorno()"
+      />
+
+      <p id="possibleWin" style="font-weight: bold; color: #00ffb3;">
+        Possível ganho: R$ 0,00
+      </p>
+
+      <p id="betText">Envie sua aposta</p>
+
+      <div class="qr-box">
+        <img id="betQr" src="/qr-frald-g.png" alt="QR Code Pix">
+      </div>
+
+      <textarea id="pixCode" class="pix-code" readonly></textarea>
+      <button class="copy-btn" id="copyBtn" onclick="copiarPix()">📋 Copiar código Pix</button>
+      <div class="copied" id="copiedMsg">✅ Código Pix copiado</div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      total: 0,
+      entry: 50,
+      pix: "SEU_CODIGO_PIX_AQUI",
+      qrBoy: "/qr-frald-g.png",
+      qrGirl: "/qr-frald-g.png"
+    };
+    function calcularRetorno() {
+      const valor = parseFloat(document.getElementById("betAmount").value) || 0;
+      const ganho = valor * currentOdd;
+
+      document.getElementById("possibleWin").innerText =
+        "Possível ganho: R$ " + ganho.toFixed(2);
+    }
+    function moeda(v) {
+      return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function render() {
+      document.getElementById("poolValue").innerText = moeda(data.total);
+      document.getElementById("entryValue").innerText = moeda(data.entry);
+    }
+    let currentOdd = 1;
+
+    function abrirModal(type, odd) {
+      const modal = document.getElementById("betModal");
+      const badge = document.getElementById("betBadge");
+      const text = document.getElementById("betText");
+      const pix = document.getElementById("pixCode");
+
+      pix.value = data.pix;
+      currentOdd = odd;
+
+      const map = {
+        boy: "💚 Menino",
+        girl: "💜 Menina",
+
+        date_1: "📅 Até dia 10",
+        date_2: "📅 Dia 11 a 20",
+        date_3: "📅 Dia 21 a 31",
+
+        peso_1: "⚖️ Até 2,9 kg",
+        peso_2: "⚖️ 3,0 a 3,4 kg",
+        peso_3: "⚖️ 3,5 kg ou mais",
+
+        tam_1: "📏 Até 47 cm",
+        tam_2: "📏 48 a 50 cm",
+        tam_3: "📏 51 cm ou mais",
+
+        dia: "🌞 Durante o dia",
+        noite: "🌙 Durante a noite"
+      };
+
+      badge.innerText = map[type] || "Aposta";
+      text.innerText = `Odd: ${odd}`;
+
+      modal.style.display = "flex";
+    }
+
+    function fecharModal() {
+      document.getElementById("betModal").style.display = "none";
+    }
+
+    function copiarPix() {
+      const pix = document.getElementById("pixCode");
+      const copyBtn = document.getElementById("copyBtn");
+      const copiedMsg = document.getElementById("copiedMsg");
+
+      navigator.clipboard.writeText(pix.value);
+      copyBtn.innerText = "✅ Copiado!";
+      copiedMsg.style.display = "block";
+    }
+
+    window.onclick = function(e) {
+      const modal = document.getElementById("betModal");
+      if (e.target === modal) fecharModal();
+    };
+
+    render();
+  </script>
+</body>
+</html>
